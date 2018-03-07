@@ -6,4 +6,49 @@
     android:layout_height="match_parent"
     tools:context="com.github.gustavofernandes.radioplayer.MainActivity">
 
+    <TextView
+        android:id="@+id/textview_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textview_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="artist"
+        app:layout_constraintStart_toStartOf="@+id/textview_title"
+        app:layout_constraintTop_toBottomOf="@+id/textview_title" />
+
+    <Button
+        android:id="@+id/button_previous"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Previous"
+        app:layout_constraintStart_toStartOf="@+id/textview_artist"
+        app:layout_constraintTop_toBottomOf="@+id/textview_artist" />
+
+    <Button
+        android:id="@+id/button_playPause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="PlayPause"
+        app:layout_constraintBaseline_toBaselineOf="@+id/button_previous"
+        app:layout_constraintStart_toEndOf="@+id/button_previous" />
+
+    <Button
+        android:id="@+id/button_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Next"
+        app:layout_constraintBaseline_toBaselineOf="@+id/button_playPause"
+        app:layout_constraintStart_toEndOf="@+id/button_playPause" />
 </android.support.constraint.ConstraintLayout>
