@@ -1,5 +1,7 @@
 package com.github.gustavofernandes.radioplayer;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,6 +21,9 @@ public class AudioService extends MediaBrowserServiceCompat {
     private MediaSessionCompat mMediaSession;
     private MediaPlayer mMediaPlayer;
 
+    private AudioManager mAudioManager;
+    private AudioManagerFocusChangeListener mAudioManagerFocusChangeListener;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -32,6 +37,10 @@ public class AudioService extends MediaBrowserServiceCompat {
         setSessionToken(mMediaSession.getSessionToken());
 
         mMediaPlayer = new MediaPlayer();
+
+        // TODO: move AudioManager and listener to own class?
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        mAudioManagerFocusChangeListener = new AudioManagerFocusChangeListener();
     }
  
     @Override
@@ -59,19 +68,36 @@ public class AudioService extends MediaBrowserServiceCompat {
 
     private class MediaSessionCallback extends MediaSessionCompat.Callback {
 
-        // TODO: implement more methods
-
         // TODO: set MediaSession to active/inactive
 
 
         @Override
         public void onPlay() {
-
+            int result = mAudioManager.requestAudioFocus(mAudioManagerFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                // TODO: proceed with playing
+            }
         }
 
         @Override
         public void onPause() {
             mMediaPlayer.pause();
+        }
+
+        @Override
+        public void onStop() {
+            mAudioManager.abandonAudioFocus(mAudioManagerFocusChangeListener);
+        }
+    }
+
+    private class AudioManagerFocusChangeListener implements AudioManager.OnAudioFocusChangeListener {
+
+        @Override
+        public void onAudioFocusChange(int i) {
+            if (i == AudioManager.AUDIOFOCUS_LOSS) {
+                // TODO: implement this (stop playback here) and other changes
+                // AUDIOFOCUS_LOSS_TRANSIENT, AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK, AUDIOFOCUS_GAIN
+            }
         }
     }
 }
