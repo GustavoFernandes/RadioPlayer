@@ -1,13 +1,12 @@
 package com.github.gustavofernandes.radioplayer;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,6 +17,7 @@ public class AudioService extends MediaBrowserServiceCompat {
     private static final String TAG = AudioService.class.getSimpleName();
 
     private MediaSessionCompat mMediaSession;
+    private MediaPlayer mMediaPlayer;
 
     @Override
     public void onCreate() {
@@ -30,6 +30,15 @@ public class AudioService extends MediaBrowserServiceCompat {
         mMediaSession.setCallback(new MediaSessionCallback());
 
         setSessionToken(mMediaSession.getSessionToken());
+
+        mMediaPlayer = new MediaPlayer();
+    }
+ 
+    @Override
+    public void onDestroy() {
+        mMediaPlayer.release();
+        mMediaPlayer = null;
+        mMediaSession.release();
     }
 
     @Override
@@ -44,10 +53,25 @@ public class AudioService extends MediaBrowserServiceCompat {
 
     private List<MediaBrowserCompat.MediaItem> getMediaItemsById(String id) {
         // TODO
+
         return Collections.emptyList();
     }
 
     private class MediaSessionCallback extends MediaSessionCompat.Callback {
-        // TODO
+
+        // TODO: implement more methods
+
+        // TODO: set MediaSession to active/inactive
+
+
+        @Override
+        public void onPlay() {
+
+        }
+
+        @Override
+        public void onPause() {
+            mMediaPlayer.pause();
+        }
     }
 }
