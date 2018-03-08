@@ -24,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private Button mPlayPauseButton;
     private Button mNextButton;
 
+    private boolean mIsPlaying;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,25 +58,27 @@ public class MainActivity extends AppCompatActivity {
         mNextButton.setOnClickListener(view -> MediaControllerCompat.getMediaController(MainActivity.this).getTransportControls().skipToNext());
 
         mPlayPauseButton.setOnClickListener(view -> {
-            if (MediaControllerCompat.getMediaController(MainActivity.this).getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
+            if (mIsPlaying) {
                 MediaControllerCompat.getMediaController(MainActivity.this).getTransportControls().pause();
             } else {
                 MediaControllerCompat.getMediaController(MainActivity.this).getTransportControls().play();
             }
         });
 
-        updatePlayPauseView(MediaControllerCompat.getMediaController(MainActivity.this).getPlaybackState());
+        updatePlayPauseView();
         updateTitleAndArtistViews(MediaControllerCompat.getMediaController(MainActivity.this).getMetadata());
     }
 
-    private void updatePlayPauseView(PlaybackStateCompat state) {
+    private void updatePlayPauseView() {
         // TODO: account for states other than STATE_PLAYING or not
-        mPlayPauseButton.setText(state.getState() == PlaybackStateCompat.STATE_PLAYING ? "PAUSE" : "PLAY");
+        mPlayPauseButton.setText(mIsPlaying ? "PAUSE" : "PLAY");
     }
 
     private void updateTitleAndArtistViews(MediaMetadataCompat metadata) {
-        mTitleTextView.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
-        mArtistTextView.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
+        if (metadata != null) {
+            mTitleTextView.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+            mArtistTextView.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
+        }
     }
 
     private class MediaBrowserConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
@@ -119,7 +123,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
-            updatePlayPauseView(state);
+            mIsPlaying = state != null && state.getState() == PlaybackStateCompat.STATE_PLAYING;
+            updatePlayPauseView();
         }
     }
 }
