@@ -1,6 +1,9 @@
 package com.github.gustavofernandes.radioplayer;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -24,6 +27,8 @@ public class AudioService extends MediaBrowserServiceCompat {
     private AudioManager mAudioManager;
     private AudioManagerFocusChangeListener mAudioManagerFocusChangeListener;
 
+    private BroadcastReceiver mNoisyReceiver;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -41,6 +46,14 @@ public class AudioService extends MediaBrowserServiceCompat {
         // TODO: move AudioManager and listener to own class?
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mAudioManagerFocusChangeListener = new AudioManagerFocusChangeListener();
+
+        mNoisyReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                // TODO: pause playback
+            }
+        };
     }
  
     @Override
@@ -75,6 +88,9 @@ public class AudioService extends MediaBrowserServiceCompat {
         public void onPlay() {
             int result = mAudioManager.requestAudioFocus(mAudioManagerFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
             if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+
+                registerReceiver(mNoisyReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+                
                 // TODO: proceed with playing
             }
         }
@@ -87,6 +103,7 @@ public class AudioService extends MediaBrowserServiceCompat {
         @Override
         public void onStop() {
             mAudioManager.abandonAudioFocus(mAudioManagerFocusChangeListener);
+            unregisterReceiver(mNoisyReceiver);
         }
     }
 
