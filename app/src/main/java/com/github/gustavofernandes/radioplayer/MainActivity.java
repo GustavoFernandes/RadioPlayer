@@ -8,7 +8,6 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -60,6 +59,19 @@ public class MainActivity extends AppCompatActivity {
                 MediaControllerCompat.getMediaController(MainActivity.this).getTransportControls().play();
             }
         });
+
+        updatePlayPauseView(MediaControllerCompat.getMediaController(MainActivity.this).getPlaybackState());
+        updateTitleAndArtistViews(MediaControllerCompat.getMediaController(MainActivity.this).getMetadata());
+    }
+
+    private void updatePlayPauseView(PlaybackStateCompat state) {
+        // TODO: account for states other than STATE_PLAYING or not
+        mPlayPauseButton.setText(state.getState() == PlaybackStateCompat.STATE_PLAYING ? "PAUSE" : "PLAY");
+    }
+
+    private void updateTitleAndArtistViews(MediaMetadataCompat metadata) {
+        mTitleTextView.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+        mArtistTextView.setText(metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
     }
 
     private class MediaBrowserConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
@@ -79,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 buildTransportControls();
 
             } catch (RemoteException e) {
-                // TODO
+                // TODO: handle exception
                 e.printStackTrace();
             }
         }
@@ -89,12 +101,12 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
-            // TODO
+            updateTitleAndArtistViews(metadata);
         }
 
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
-            // TODO
+            updatePlayPauseView(state);
         }
     }
 }
