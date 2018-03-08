@@ -81,16 +81,15 @@ public class AudioService extends MediaBrowserServiceCompat {
 
     private class MediaSessionCallback extends MediaSessionCompat.Callback {
 
-        // TODO: set MediaSession to active/inactive
-
-
         @Override
         public void onPlay() {
             int result = mAudioManager.requestAudioFocus(mAudioManagerFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
             if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
 
+                mMediaSession.setActive(true);
+
                 registerReceiver(mNoisyReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
-                
+
                 // TODO: proceed with playing
             }
         }
@@ -103,6 +102,7 @@ public class AudioService extends MediaBrowserServiceCompat {
         @Override
         public void onStop() {
             mAudioManager.abandonAudioFocus(mAudioManagerFocusChangeListener);
+            mMediaSession.setActive(false);
             unregisterReceiver(mNoisyReceiver);
         }
     }
