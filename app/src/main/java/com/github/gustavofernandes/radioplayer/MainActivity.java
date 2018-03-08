@@ -2,6 +2,7 @@ package com.github.gustavofernandes.radioplayer;
 
 import android.content.ComponentName;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -10,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -90,10 +93,20 @@ public class MainActivity extends AppCompatActivity {
 
                 buildTransportControls();
 
+                mMediaBrowser.subscribe(AudioService.ROOT, new MediaBrowserSubscriptionCallback());
+
             } catch (RemoteException e) {
                 // TODO: handle exception
                 e.printStackTrace();
             }
+        }
+    }
+
+    private class MediaBrowserSubscriptionCallback extends MediaBrowserCompat.SubscriptionCallback {
+
+        @Override
+        public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
+            // TODO
         }
     }
 

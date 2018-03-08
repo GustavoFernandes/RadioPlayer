@@ -13,8 +13,9 @@ import java.util.List;
 
 public class AudioService extends MediaBrowserServiceCompat {
 
+    public static final String ROOT = "root";
+
     private static final String TAG = AudioService.class.getSimpleName();
-    private static final String ROOT = "root";
 
     private MediaSessionCompat mMediaSession;
 
