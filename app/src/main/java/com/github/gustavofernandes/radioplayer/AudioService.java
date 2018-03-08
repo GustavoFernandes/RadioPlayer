@@ -12,6 +12,7 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +24,9 @@ public class AudioService extends MediaBrowserServiceCompat {
     private static final String TAG = AudioService.class.getSimpleName();
 
     private MediaSessionCompat mMediaSession;
+    private PlaybackStateCompat mPlaybackState;
+    private PlaybackStateCompat.Builder mPlaybackStateBuilder;
+
     private MediaPlayer mMediaPlayer;
 
     private AudioManager mAudioManager;
@@ -41,6 +45,15 @@ public class AudioService extends MediaBrowserServiceCompat {
         mMediaSession.setCallback(new MediaSessionCallback());
 
         setSessionToken(mMediaSession.getSessionToken());
+
+        mPlaybackStateBuilder = new PlaybackStateCompat.Builder();
+
+        mPlaybackState =
+                mPlaybackStateBuilder.setState(PlaybackStateCompat.STATE_NONE, 0, 0)
+                .setActions(PlaybackStateCompat.ACTION_PREPARE)
+                .build();
+
+        mMediaSession.setPlaybackState(mPlaybackState);
 
         mMediaPlayer = new MediaPlayer();
 
@@ -98,12 +111,26 @@ public class AudioService extends MediaBrowserServiceCompat {
                 registerReceiver(mNoisyReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
 
                 // TODO: proceed with playing
+
+                mPlaybackState = mPlaybackStateBuilder
+                        .setState(PlaybackStateCompat.STATE_PLAYING, 0, 1)
+                        .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE)
+                        .build();
+                mMediaSession.setPlaybackState(mPlaybackState);
+
+                // TODO: set MediaMetadataCompat on mMediaSession
             }
         }
 
         @Override
         public void onPause() {
             mMediaPlayer.pause();
+
+            mPlaybackState = mPlaybackStateBuilder
+                    .setState(PlaybackStateCompat.STATE_PAUSED, 0, 0)
+                    .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE)
+                    .build();
+            mMediaSession.setPlaybackState(mPlaybackState);
         }
 
         @Override
