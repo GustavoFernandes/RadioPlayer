@@ -25,7 +25,6 @@ public class AudioService extends MediaBrowserServiceCompat {
     private static final String TAG = AudioService.class.getSimpleName();
 
     private MediaSessionCompat mMediaSession;
-    private PlaybackStateCompat mPlaybackState;
     private PlaybackStateCompat.Builder mPlaybackStateBuilder;
 
     private MediaPlayer mMediaPlayer;
@@ -50,13 +49,12 @@ public class AudioService extends MediaBrowserServiceCompat {
         setSessionToken(mMediaSession.getSessionToken());
 
         mPlaybackStateBuilder = new PlaybackStateCompat.Builder();
-
-        mPlaybackState =
-                mPlaybackStateBuilder.setState(PlaybackStateCompat.STATE_NONE, 0, 0)
+        mPlaybackStateBuilder
+                .setState(PlaybackStateCompat.STATE_NONE, 0, 0)
                 .setActions(PlaybackStateCompat.ACTION_PREPARE)
                 .build();
 
-        mMediaSession.setPlaybackState(mPlaybackState);
+        mMediaSession.setPlaybackState(mPlaybackStateBuilder.build());
 
         mMediaPlayer = new MediaPlayer();
 
@@ -115,11 +113,11 @@ public class AudioService extends MediaBrowserServiceCompat {
 
                 // TODO: proceed with playing
 
-                mPlaybackState = mPlaybackStateBuilder
+                mPlaybackStateBuilder
                         .setState(PlaybackStateCompat.STATE_PLAYING, 0, 1)
                         .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE)
                         .build();
-                mMediaSession.setPlaybackState(mPlaybackState);
+                mMediaSession.setPlaybackState(mPlaybackStateBuilder.build());
 
                 // TODO: set MediaMetadataCompat on mMediaSession
 
@@ -132,11 +130,11 @@ public class AudioService extends MediaBrowserServiceCompat {
         public void onPause() {
             mMediaPlayer.pause();
 
-            mPlaybackState = mPlaybackStateBuilder
+            mPlaybackStateBuilder
                     .setState(PlaybackStateCompat.STATE_PAUSED, 0, 0)
                     .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE)
                     .build();
-            mMediaSession.setPlaybackState(mPlaybackState);
+            mMediaSession.setPlaybackState(mPlaybackStateBuilder.build());
 
             // TODO: update notification
 
