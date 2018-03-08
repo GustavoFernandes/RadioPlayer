@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
@@ -33,6 +34,8 @@ public class AudioService extends MediaBrowserServiceCompat {
     private AudioManagerFocusChangeListener mAudioManagerFocusChangeListener;
 
     private BroadcastReceiver mNoisyReceiver;
+
+    private NotificationCompat.Builder mNotificationBuilder;
 
     @Override
     public void onCreate() {
@@ -119,6 +122,9 @@ public class AudioService extends MediaBrowserServiceCompat {
                 mMediaSession.setPlaybackState(mPlaybackState);
 
                 // TODO: set MediaMetadataCompat on mMediaSession
+
+                buildNotification(); // TODO: optimize
+                startForeground(1, mNotificationBuilder.build());
             }
         }
 
@@ -131,6 +137,10 @@ public class AudioService extends MediaBrowserServiceCompat {
                     .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE)
                     .build();
             mMediaSession.setPlaybackState(mPlaybackState);
+
+            // TODO: update notification
+
+            stopForeground(false);
         }
 
         @Override
@@ -138,7 +148,19 @@ public class AudioService extends MediaBrowserServiceCompat {
             mAudioManager.abandonAudioFocus(mAudioManagerFocusChangeListener);
             mMediaSession.setActive(false);
             unregisterReceiver(mNoisyReceiver);
+
+            stopForeground(true);
         }
+    }
+
+    private void buildNotification() {
+
+        mNotificationBuilder = MediaSessionNotificationBuilder.Companion.from(this, mMediaSession);
+
+        mNotificationBuilder.setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
+            .setMediaSession(mMediaSession.getSessionToken())
+            .setShowCancelButton(true)
+            .setCancelButtonIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_STOP)));
     }
 
     private class AudioManagerFocusChangeListener implements AudioManager.OnAudioFocusChangeListener {
