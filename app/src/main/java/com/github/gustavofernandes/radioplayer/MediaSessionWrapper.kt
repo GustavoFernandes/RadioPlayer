@@ -9,7 +9,7 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 
 @Suppress("DEPRECATION")
-class MediaSessionWrapper(context: Context, callback: MediaSessionCallback) : AudioManager.OnAudioFocusChangeListener {
+class MediaSessionWrapper(private val context: Context, callback: MediaSessionCallback) : AudioManager.OnAudioFocusChangeListener {
 
     companion object {
         private val TAG = MediaSessionWrapper::class.java.simpleName
@@ -17,6 +17,7 @@ class MediaSessionWrapper(context: Context, callback: MediaSessionCallback) : Au
 
     val mediaSession = MediaSessionCompat(context, TAG)
     val sessionToken: MediaSessionCompat.Token
+    val notificationBuilder = MediaSessionNotificationBuilder(context)
 
     private val mediaSessionCallback = object : MediaSessionCompat.Callback() {
         override fun onPlay() {
@@ -31,6 +32,8 @@ class MediaSessionWrapper(context: Context, callback: MediaSessionCallback) : Au
                     .setState(PlaybackStateCompat.STATE_PLAYING,0, 1f)
                     .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE)
             mediaSession.setPlaybackState(playbackStateBuilder.build())
+
+            notificationBuilder.from(mediaSession)
 
             callback.onPlay()
         }

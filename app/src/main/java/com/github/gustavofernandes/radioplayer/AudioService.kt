@@ -3,11 +3,9 @@ package com.github.gustavofernandes.radioplayer
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.support.v4.app.NotificationCompat
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserServiceCompat
 import android.support.v4.media.session.MediaButtonReceiver
-import android.support.v4.media.session.PlaybackStateCompat
 import java.util.*
 
 class AudioService: MediaBrowserServiceCompat(), MediaSessionCallback {
@@ -19,8 +17,6 @@ class AudioService: MediaBrowserServiceCompat(), MediaSessionCallback {
     private lateinit var mediaSessionWrapper: MediaSessionWrapper
 
     private var mediaPlayer: MediaPlayer? = null
-
-    private lateinit var notificationBuilder: NotificationCompat.Builder
 
     override fun onCreate() {
         super.onCreate()
@@ -53,8 +49,7 @@ class AudioService: MediaBrowserServiceCompat(), MediaSessionCallback {
 
     override fun onPlay() {
         // TODO: play mediaplayer
-        buildNotification() // TODO: optimize
-        startForeground(1, notificationBuilder.build())
+        startForeground(1, mediaSessionWrapper.notificationBuilder.build())
     }
 
     override fun onPause() {
@@ -68,16 +63,5 @@ class AudioService: MediaBrowserServiceCompat(), MediaSessionCallback {
 
     private fun getMediaItemsById(id: String): MutableList<MediaBrowserCompat.MediaItem>? {
         return Collections.emptyList() // TODO
-    }
-
-    private fun buildNotification() {
-        notificationBuilder = MediaSessionNotificationBuilder.from(
-                this, mediaSessionWrapper.mediaSession)
-
-        notificationBuilder.setStyle(android.support.v4.media.app.NotificationCompat.MediaStyle()
-                .setMediaSession(sessionToken)
-                .setShowCancelButton(true)
-                .setCancelButtonIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(
-                        this, PlaybackStateCompat.ACTION_STOP)))
     }
 }

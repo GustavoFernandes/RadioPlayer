@@ -6,26 +6,34 @@ import android.support.v4.media.session.MediaButtonReceiver
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 
-class MediaSessionNotificationBuilder {
-    companion object {
-        fun from(context: Context, mediaSession: MediaSessionCompat): NotificationCompat.Builder {
-            val builder = NotificationCompat.Builder(context)
+@Suppress("DEPRECATION")
+class MediaSessionNotificationBuilder(private val context: Context?) : NotificationCompat.Builder(context) {
+    fun from(mediaSession: MediaSessionCompat): NotificationCompat.Builder {
 
-            val controller = mediaSession.controller
-            val description = controller.metadata.description
+        val controller = mediaSession.controller
+        val description = controller?.metadata?.description
 
-            builder
-                    .setContentTitle(description.title)
-                    .setContentText(description.subtitle)
-                    .setSubText(description.description)
-                    .setLargeIcon(description.iconBitmap)
+        if (description === null) return this // TODO
 
-                    .setContentIntent(controller.sessionActivity)
-                    .setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(context, PlaybackStateCompat.ACTION_STOP))
+        val mediaStyle = android.support.v4.media.app.NotificationCompat.MediaStyle()
+                .setMediaSession(mediaSession.sessionToken)
+                .setShowCancelButton(true)
+                .setCancelButtonIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(
+                        context, PlaybackStateCompat.ACTION_STOP))
 
-                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+        this
+                .setContentTitle(description.title)
+                .setContentText(description.subtitle)
+                .setSubText(description.description)
+                .setLargeIcon(description.iconBitmap)
 
-            return builder
-        }
+                .setContentIntent(controller.sessionActivity)
+                .setDeleteIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(context, PlaybackStateCompat.ACTION_STOP))
+
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+
+                .setStyle(mediaStyle)
+
+        return this
     }
 }
