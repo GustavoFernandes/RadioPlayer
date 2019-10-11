@@ -11,7 +11,12 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -83,12 +88,42 @@ class MainActivity : AppCompatActivity() {
     private fun loadStations() {
         Log.d(TAG, "Loading stations...")
 
+        val recyclerViewLayoutManager = LinearLayoutManager(this)
+
         mediaBrowser.subscribe(AudioService.STATIONS, object : MediaBrowserCompat.SubscriptionCallback() {
             override fun onChildrenLoaded(parentId: String, children: MutableList<MediaBrowserCompat.MediaItem>) {
                 Log.d(TAG, "Stations loaded: $children")
 
+                val list = children.map { it.description.title.toString() }.toTypedArray()
+
+                recyclerView.apply {
+                    setHasFixedSize(true)
+                    layoutManager = recyclerViewLayoutManager
+                    adapter = RecyclerViewAdapter(list)
+                }
             }
         })
+    }
+
+    class RecyclerViewAdapter(private val data: Array<String>) : RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder>() {
+
+        class RecyclerViewHolder(val textView: TextView) : RecyclerView.ViewHolder(textView)
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewHolder {
+
+            val textView = LayoutInflater
+                    .from(parent.context)
+                    .inflate(R.layout.list_item, parent, false) as TextView
+
+            return RecyclerViewHolder(textView)
+        }
+
+        override fun getItemCount() = data.size
+
+        override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
+            holder.textView.text = data[position]
+        }
+
     }
 
     private inner class MediaBrowserConnectionCallback : MediaBrowserCompat.ConnectionCallback() {

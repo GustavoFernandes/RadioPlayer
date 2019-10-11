@@ -6,25 +6,6 @@
     android:layout_height="match_parent"
     tools:context="com.github.gustavofernandes.radioplayer.MainActivity">
 
-    <TextView
-        android:id="@+id/textview_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textview_artist"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="artist"
-        app:layout_constraintStart_toStartOf="@+id/textview_title"
-        app:layout_constraintTop_toBottomOf="@+id/textview_title" />
-
     <Button
         android:id="@+id/button_previous"
         android:layout_width="wrap_content"
@@ -51,4 +32,31 @@
         android:text="Next"
         app:layout_constraintBaseline_toBaselineOf="@+id/button_playPause"
         app:layout_constraintStart_toEndOf="@+id/button_playPause" />
+
+    <TextView
+        android:id="@+id/textview_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="artist"
+        app:layout_constraintStart_toStartOf="@+id/textview_title"
+        app:layout_constraintTop_toBottomOf="@+id/textview_title" />
+
+    <TextView
+        android:id="@+id/textview_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="206dp"
+        android:layout_height="401dp"
+        app:layout_constraintStart_toStartOf="@+id/button_previous"
+        app:layout_constraintTop_toBottomOf="@+id/button_previous" />
+
 </android.support.constraint.ConstraintLayout>
