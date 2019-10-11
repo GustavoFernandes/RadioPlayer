@@ -56,8 +56,10 @@ class MainActivity : AppCompatActivity() {
         button_next.setOnClickListener { transportControls.skipToNext() }
         button_playPause.setOnClickListener {
             if (isPlaying) {
+                Log.d(TAG, "Pause button clicked")
                 transportControls.pause()
             } else {
+                Log.d(TAG, "Play button clicked")
                 transportControls.play()
             }
         }
@@ -78,6 +80,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun loadStations() {
+        Log.d(TAG, "Loading stations...")
+
+        mediaBrowser.subscribe(AudioService.STATIONS, object : MediaBrowserCompat.SubscriptionCallback() {
+            override fun onChildrenLoaded(parentId: String, children: MutableList<MediaBrowserCompat.MediaItem>) {
+                Log.d(TAG, "Stations loaded: $children")
+
+            }
+        })
+    }
+
     private inner class MediaBrowserConnectionCallback : MediaBrowserCompat.ConnectionCallback() {
 
         override fun onConnected() {
@@ -92,9 +105,15 @@ class MainActivity : AppCompatActivity() {
             MediaControllerCompat.setMediaController(this@MainActivity, mediaController)
 
             buildTransportControls()
+            loadStations()
+        }
 
-            Log.d(TAG, "Media browser subscribing...")
-            mediaBrowser.subscribe(AudioService.STATIONS, MediaBrowserSubscriptionCallback())
+        override fun onConnectionSuspended() {
+            // TODO
+        }
+
+        override fun onConnectionFailed() {
+            // TODO
         }
     }
 

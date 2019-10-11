@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.media.AudioManager
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.util.Log
 
 @Suppress("DEPRECATION")
 class MediaSessionWrapper(private val context: Context, callback: MediaSessionCallback) : AudioManager.OnAudioFocusChangeListener {
@@ -21,6 +22,8 @@ class MediaSessionWrapper(private val context: Context, callback: MediaSessionCa
 
     private val mediaSessionCallback = object : MediaSessionCompat.Callback() {
         override fun onPlay() {
+            Log.d(TAG, "onPlay")
+
             if (!canPlay()) return
 
             mediaSession.isActive = true
@@ -39,6 +42,8 @@ class MediaSessionWrapper(private val context: Context, callback: MediaSessionCa
         }
 
         override fun onPause() {
+            Log.d(TAG, "onPause")
+
             playbackStateBuilder
                     .setState(PlaybackStateCompat.STATE_PAUSED, 0, 0f)
                     .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE)
@@ -48,6 +53,8 @@ class MediaSessionWrapper(private val context: Context, callback: MediaSessionCa
         }
 
         override fun onStop() {
+            Log.d(TAG, "onStop")
+
             mediaSession.isActive = false
 
             audioManager.abandonAudioFocus(this@MediaSessionWrapper)

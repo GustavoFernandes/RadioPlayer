@@ -105,16 +105,19 @@ class AudioService: MediaBrowserServiceCompat(), MediaSessionCallback {
     }
 
     override fun onPlay() {
+        Log.d(TAG, "onPlay")
         // TODO: play mediaplayer
         startForeground(1, mediaSessionWrapper.notificationBuilder.build())
     }
 
     override fun onPause() {
+        Log.d(TAG, "onPause")
         // TODO: pause mediaplayer
         stopForeground(false)
     }
 
     override fun onStop() {
+        Log.d(TAG, "onStop")
         stopForeground(true)
     }
 
